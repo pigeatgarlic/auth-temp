@@ -39,6 +39,15 @@ export class AuthService {
         var str = await this.jwtToken.signAsync(payload);
         return str;
     }
+    async RemoveGameSession(clientID : number) : Promise<boolean>
+    {
+        var result = this.sessions.find(x => x.clientID == clientID)
+        if (result == null) {
+            return false;
+        }
+        this.sessions = this.sessions.filter(x => x.clientID != clientID);
+        return true;
+    }
 
     async RequestServerToken(serverID : number) : Promise<string>
     {
