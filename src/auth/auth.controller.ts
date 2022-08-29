@@ -2,13 +2,21 @@ import { Body, Controller, Get, Param, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 
 
-export class TokenValidationResult{
-    constructor(server:string,client:string){
-        this.serverToken = server;
-        this.clientToken = client;
+export class ServerTokenValidationResult{
+    constructor(server:number,ID: number){
+        this.serverID = server;
+        this.ID = ID;
     }
-    serverToken: string;
-    clientToken: string;
+    ID: number;
+    serverID: number;
+}
+export class ClientTokenValidationResult{
+    constructor(client:number,ID: number){
+        this.clientID = client;
+        this.ID = ID;
+    }
+    ID: number;
+    clientID: number;
 }
 
 @Controller('auth')
@@ -40,7 +48,7 @@ export class AuthController {
   }
 
   @Get("validate/:token")
-  async validateToken(@Param('token') token: string): Promise<undefined | TokenValidationResult> {
+  async validateToken(@Param('token') token: string): Promise<ClientTokenValidationResult | ServerTokenValidationResult | undefined> {
     if (token == null) {
         return null;
     }

@@ -3,7 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { GameserverModule } from 'src/gameserver/gameserver.module';
 import { AuthService } from './auth.service';
 import { jwtConstants } from '../../constant'
-import { AuthController, TokenValidationResult } from './auth.controller';
+import { AuthController } from './auth.controller';
 import { GameserverService } from 'src/gameserver/gameserver.service';
 
 @Module({
@@ -16,7 +16,6 @@ import { GameserverService } from 'src/gameserver/gameserver.service';
   controllers: [AuthController],
   providers: [
     AuthService, 
-    TokenValidationResult
   ],
 })
 export class AuthModule {}

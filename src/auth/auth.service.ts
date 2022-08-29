@@ -1,16 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { log } from 'console';
+import { log, time } from 'console';
+import { pseudoRandomBytes, randomInt } from 'crypto';
 import { Strategy } from 'passport-jwt';
 import { GameserverService } from 'src/gameserver/gameserver.service';
-import { TokenValidationResult } from './auth.controller';
+import { ClientTokenValidationResult, ServerTokenValidationResult } from './auth.controller';
 
 class Session {
     constructor(clientID : number, serverID: number) {
         this.clientID = clientID;
         this.serverID = serverID;
+        this.ID = randomInt(10000)
     }
+
+    ID: number;
     clientID : number;
     serverID : number;
 }
@@ -31,11 +35,12 @@ export class AuthService {
         if (server == null) {
             return "none"
         }
-        this.sessions.push(new Session(clientID,server.serverID));
-        var payload = {
-            clientID: clientID,
-        };
+        var result = this.sessions.find(x => x.clientID == clientID)
+        if (result == null) {
+            this.sessions.push(new Session(clientID,server.serverID));
+        }
 
+        var payload = { clientID: clientID, };
         var str = await this.jwtToken.signAsync(payload);
         return str;
     }
@@ -56,53 +61,28 @@ export class AuthService {
         if (ses == null) {
             return "none"
         }
-        var payload = {
-            serverID: ses.serverID
-        };
 
+        var payload = { serverID: ses.serverID };
         var str = await this.jwtToken.signAsync(payload);
         return str;
     }
 
-    async ValidateToken(Val: string) : Promise<undefined | TokenValidationResult>
+    async ValidateToken(Val: string) : Promise<undefined | ServerTokenValidationResult | ClientTokenValidationResult>
     {
+        var payload = null;
         var client = null;
         var server = null;
+        try { payload = this.jwtToken.decode(Val); } catch (error) { return null; }
 
-        try {
-            var payload = this.jwtToken.decode(Val);
-            if (payload["clientID"] != null) {
-                client = payload["clientID"]
-            }else if (payload["serverID"] != null) {
-                server = payload["serverID"]
-            }else {
-                return null;
-            }
-        } catch (error) {
-           return null; 
-        }
-
-        if (client == null) {
-            this.sessions.forEach(element => {
-                if (element.serverID == server) {
-                    client = element.clientID
-                }
-            });
-        } else if (server == null) {
-            this.sessions.forEach(element => {
-                if (element.clientID == client) {
-                    server = element.serverID
-                }
-            });
-        }
-
-        if (client == null || server == null) {
+        if (payload["clientID"] != null) {
+            client = payload["clientID"]
+        }else if (payload["serverID"] != null) {
+            server = payload["serverID"]
+        }else {
             return null;
         }
 
-        
-        return new TokenValidationResult(
-            this.jwtToken.sign({ serverID: server }),
-            this.jwtToken.sign({ clientID: client }));
+        var session = this.sessions.find(x => x.serverID == server || x.clientID == client );
+        return server ? new ServerTokenValidationResult(server,session.ID) : new ClientTokenValidationResult(client,session.ID);
     }
 }
