@@ -27,7 +27,7 @@ jobs:
 
   CD:    
     runs-on: ubuntu-latest
-    needs: [ "build" ]
+    needs: [ "CI" ]
     steps:
     - name: update via kubectl 
       run : |
