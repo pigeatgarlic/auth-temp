@@ -23,6 +23,14 @@ export class AuthController {
     return await this.appService.RequestGameSession(Number.parseInt(id));
   }
 
+  @Get("terminate/:id")
+  async terminateSession(@Param('id') id: string): Promise<boolean> {
+    if (id == null) {
+        return false;
+    }
+    return await this.appService.RemoveGameSession(Number.parseInt(id));
+  }
+
   @Get("server/:id")
   async getServerToken(@Param('id') id: string): Promise<string> {
     if (id == null) {
