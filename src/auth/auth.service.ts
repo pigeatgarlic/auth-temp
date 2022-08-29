@@ -101,6 +101,6 @@ export class AuthService {
         }
 
         
-        return new TokenValidationResult(server,client);
+        return new TokenValidationResult(`server:${server}`,`client:${client}`);
     }
 }
