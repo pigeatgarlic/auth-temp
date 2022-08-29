@@ -101,6 +101,8 @@ export class AuthService {
         }
 
         
-        return new TokenValidationResult(`server:${server}`,`client:${client}`);
+        return new TokenValidationResult(
+            this.jwtToken.sign({ serverID: server }),
+            this.jwtToken.sign({ clientID: client }));
     }
 }
