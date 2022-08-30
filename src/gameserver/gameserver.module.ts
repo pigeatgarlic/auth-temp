@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { ClientTokenValidationResult, ServerTokenValidationResult } from 'src/auth/auth.controller';
+import { TokenValidationResult} from 'src/auth/auth.controller';
 import { GameserverService } from './gameserver.service';
 
 @Module({
-    imports: [ClientTokenValidationResult,ServerTokenValidationResult],
+    imports: [TokenValidationResult],
     providers: [GameserverService],
     exports: [GameserverService]
 })

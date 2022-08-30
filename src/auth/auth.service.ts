@@ -5,7 +5,7 @@ import { log, time } from 'console';
 import { pseudoRandomBytes, randomInt } from 'crypto';
 import { Strategy } from 'passport-jwt';
 import { GameserverService } from 'src/gameserver/gameserver.service';
-import { ClientTokenValidationResult, ServerTokenValidationResult } from './auth.controller';
+import { TokenValidationResult} from './auth.controller';
 
 class Session {
     constructor(clientID : number, serverID: number) {
@@ -67,7 +67,7 @@ export class AuthService {
         return str;
     }
 
-    async ValidateToken(Val: string) : Promise<undefined | ServerTokenValidationResult | ClientTokenValidationResult>
+    async ValidateToken(Val: string) : Promise<undefined | TokenValidationResult>
     {
         var payload = null;
         var client = null;
@@ -83,6 +83,6 @@ export class AuthService {
         }
 
         var session = this.sessions.find(x => x.serverID == server || x.clientID == client );
-        return server ? new ServerTokenValidationResult(server,session.ID) : new ClientTokenValidationResult(client,session.ID);
+        return new TokenValidationResult(server,session.ID,client == null);
     }
 }
