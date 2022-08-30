@@ -83,6 +83,6 @@ export class AuthService {
         }
 
         var session = this.sessions.find(x => x.serverID == server || x.clientID == client );
-        return new TokenValidationResult(server,session.ID,client == null);
+        return new TokenValidationResult(server != null? server : client ,session.ID,client == null);
     }
 }
