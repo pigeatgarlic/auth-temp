@@ -6,6 +6,7 @@ export class TokenValidationResult{
     constructor(client:number,ID: number, isserver: boolean){
         this.recepient = client;
         this.id = ID;
+        this.isServer = isserver;
     }
     id: number;
     recepient: number;
