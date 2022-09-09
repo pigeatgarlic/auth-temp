@@ -50,11 +50,10 @@ export class AuthService {
         }
 
         var result = this.sessions.find(x => x.clientID == usr.UserID)
-        if (result == null) {
-            this.sessions.push(new Session(usr.UserID,res.serverID));
-        }
+        if (result == null) { this.sessions.push(new Session(usr.UserID,res.serverID)); }
+        result = this.sessions.find(x => x.clientID == usr.UserID)
 
-        var payload = { clientID: username, };
+        var payload = { clientID: result.clientID, };
         var str = await this.jwtToken.signAsync(payload);
         return str;
     }
@@ -105,6 +104,10 @@ export class AuthService {
         }
 
         var session = this.sessions.find(x => x.serverID == server || x.clientID == client );
+        if (session == null) {
+            return null;
+        }
+
         return new TokenValidationResult(server != null? server : client ,session.ID,client == null);
     }
 }
