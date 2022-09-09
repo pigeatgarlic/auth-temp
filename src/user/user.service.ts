@@ -7,20 +7,20 @@ export class User {
 
 @Injectable()
 export class UserService {
-    private servers: Array<User>
+    private users: Array<User>
 
     constructor () {
-        this.servers = new Array<User>;
+        this.users = new Array<User>;
     }
 
     async All(): Promise<Array<User>> {
-        return this.servers;
+        return this.users;
     }
     async findOne(name: string): Promise<User | undefined> {
-        return this.servers.find(user => user.name === name)
+        return this.users.find(user => user.name === name)
     }
     async addOne(name: string): Promise<void> {
-        this.servers.push({
+        this.users.push({
             UserID: Date.now(),
             name: name
         })

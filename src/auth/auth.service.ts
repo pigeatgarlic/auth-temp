@@ -44,8 +44,9 @@ export class AuthService {
         }
 
         var usr = await this.userService.findOne(username)
-        if (res == null) {
+        if (usr == null) {
             this.userService.addOne(username)
+            usr = await this.userService.findOne(username)
         }
 
         var result = this.sessions.find(x => x.clientID == usr.UserID)
