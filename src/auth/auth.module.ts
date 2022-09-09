@@ -5,10 +5,12 @@ import { AuthService } from './auth.service';
 import { jwtConstants } from '../../constant'
 import { AuthController } from './auth.controller';
 import { GameserverService } from 'src/gameserver/gameserver.service';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
   imports:[
     GameserverModule,
+    UserModule,
     JwtModule.register({
       secret: jwtConstants.secret
     })

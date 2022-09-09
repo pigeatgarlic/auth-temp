@@ -5,6 +5,7 @@ import { log, time } from 'console';
 import { pseudoRandomBytes, randomInt } from 'crypto';
 import { Strategy } from 'passport-jwt';
 import { Gameserver, GameserverService } from 'src/gameserver/gameserver.service';
+import { UserService } from 'src/user/user.service';
 import { TokenValidationResult} from './auth.controller';
 
 class Session {
@@ -22,6 +23,7 @@ class Session {
 @Injectable()
 export class AuthService {
     constructor(private gameserverService : GameserverService,
+                private userService : UserService,
                 private jwtToken: JwtService){
         this.sessions = new Array<Session>;
     }
@@ -34,19 +36,24 @@ export class AuthService {
     }
 
 
-    async RequestGameSession(clientID : number, server: string) : Promise<string>
+    async RequestGameSession(username : string, server: string) : Promise<string>
     {
         var res = await this.gameserverService.findOne(server);
         if (res == null) {
             return "none"
         }
 
-        var result = this.sessions.find(x => x.clientID == clientID)
-        if (result == null) {
-            this.sessions.push(new Session(clientID,res.serverID));
+        var usr = await this.userService.findOne(username)
+        if (res == null) {
+            this.userService.addOne(username)
         }
 
-        var payload = { clientID: clientID, };
+        var result = this.sessions.find(x => x.clientID == usr.UserID)
+        if (result == null) {
+            this.sessions.push(new Session(usr.UserID,res.serverID));
+        }
+
+        var payload = { clientID: username, };
         var str = await this.jwtToken.signAsync(payload);
         return str;
     }
@@ -66,7 +73,10 @@ export class AuthService {
     async RequestServerToken(name : string) : Promise<string>
     {
         var res = await this.gameserverService.findOne(name);
-        if (res == null) { await this.gameserverService.addOne(name); return "none"; }
+        if (res == null) { 
+            await this.gameserverService.addOne(name); 
+            return "none"; 
+        }
 
         var ses = this.sessions.find(x => x.serverID == res.serverID);
         if (ses == null) {

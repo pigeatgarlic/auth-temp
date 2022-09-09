@@ -18,12 +18,15 @@ export class TokenValidationResult{
 export class AuthController {
   constructor(private readonly appService: AuthService) {}
 
-  @Get("client/:id/:server")
-  async getGameSession(@Param('id') id: string, @Param('server') name: string): Promise<string> {
-    if (id == null) {
+  @Get("client/:user/:server/:secret")
+  async getGameSession(@Param('secret') secret: string, @Param('user') user: string, @Param('server') name: string): Promise<string> {
+    if (user == null) {
         return "none"
     }
-    return await this.appService.RequestGameSession(Number.parseInt(id), name);
+    if (secret != "oneplay") {
+        return "none"
+    }
+    return await this.appService.RequestGameSession(user, name);
   }
 
   @Get("terminate/:id")
