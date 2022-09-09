@@ -1,21 +1,28 @@
 import { Injectable } from '@nestjs/common';
 
-export type Gameserver = any;
+export class Gameserver {
+    serverID: number;
+    name: string; 
+};
 
 @Injectable()
 export class GameserverService {
-    private readonly users = [
-        {
-            serverID: 0,
-            IPaddress: "0.0.0.0",
-            using: false,
-        },
-    ]
+    private servers: Array<Gameserver>
 
-    async findOne(id: number): Promise<Gameserver | undefined> {
-        return this.users.find(server => server.serverID === id)
+    constructor () {
+        this.servers = new Array<Gameserver>;
     }
-    async findRandom(): Promise<Gameserver | undefined> {
-        return this.users.find(i => i.using === false);
+
+    async All(): Promise<Array<Gameserver>> {
+        return this.servers;
+    }
+    async findOne(name: string): Promise<Gameserver | undefined> {
+        return this.servers.find(server => server.name === name)
+    }
+    async addOne(name: string): Promise<void> {
+        this.servers.push({
+            serverID: Date.now(),
+            name: name
+        })
     }
 }

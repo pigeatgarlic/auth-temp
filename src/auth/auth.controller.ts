@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Param, Req } from '@nestjs/common';
+import { Gameserver } from 'src/gameserver/gameserver.service';
 import { AuthService } from './auth.service';
 
 
@@ -17,12 +18,12 @@ export class TokenValidationResult{
 export class AuthController {
   constructor(private readonly appService: AuthService) {}
 
-  @Get("client/:id")
-  async getGameSession(@Param('id') id: string): Promise<string> {
+  @Get("client/:id/:server")
+  async getGameSession(@Param('id') id: string, @Param('server') name: string): Promise<string> {
     if (id == null) {
         return "none"
     }
-    return await this.appService.RequestGameSession(Number.parseInt(id));
+    return await this.appService.RequestGameSession(Number.parseInt(id), name);
   }
 
   @Get("terminate/:id")
@@ -33,12 +34,17 @@ export class AuthController {
     return await this.appService.RemoveGameSession(Number.parseInt(id));
   }
 
+  @Get("allServer")
+  async getAllServer(): Promise<Array<Gameserver>> {
+    return await this.appService.GetAllServer();
+  }
+
   @Get("server/:id")
-  async getServerToken(@Param('id') id: string): Promise<string> {
-    if (id == null) {
+  async getServerToken(@Param('id') server: string): Promise<string> {
+    if (server == null) {
         return "none"
     }
-    return await this.appService.RequestServerToken(Number.parseInt(id));
+    return await this.appService.RequestServerToken(server);
   }
 
   @Get("validate/:token")

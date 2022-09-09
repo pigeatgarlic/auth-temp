@@ -4,7 +4,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { log, time } from 'console';
 import { pseudoRandomBytes, randomInt } from 'crypto';
 import { Strategy } from 'passport-jwt';
-import { GameserverService } from 'src/gameserver/gameserver.service';
+import { Gameserver, GameserverService } from 'src/gameserver/gameserver.service';
 import { TokenValidationResult} from './auth.controller';
 
 class Session {
@@ -29,15 +29,21 @@ export class AuthService {
     private sessions: Array<Session>;
 
 
-    async RequestGameSession(clientID : number) : Promise<string>
+    async GetAllServer() : Promise<Array<Gameserver>> {
+        return this.gameserverService.All();
+    }
+
+
+    async RequestGameSession(clientID : number, server: string) : Promise<string>
     {
-        var server = await this.gameserverService.findRandom();
-        if (server == null) {
+        var res = await this.gameserverService.findOne(server);
+        if (res == null) {
             return "none"
         }
+
         var result = this.sessions.find(x => x.clientID == clientID)
         if (result == null) {
-            this.sessions.push(new Session(clientID,server.serverID));
+            this.sessions.push(new Session(clientID,res.serverID));
         }
 
         var payload = { clientID: clientID, };
@@ -54,10 +60,15 @@ export class AuthService {
         return true;
     }
 
-    async RequestServerToken(serverID : number) : Promise<string>
+
+
+
+    async RequestServerToken(name : string) : Promise<string>
     {
-        this.sessions.forEach(x => log(`available session: client ${x.clientID} and server ${x.serverID}`))
-        var ses = this.sessions.find(x => x.serverID == serverID);
+        var res = await this.gameserverService.findOne(name);
+        if (res == null) { await this.gameserverService.addOne(name); return "none"; }
+
+        var ses = this.sessions.find(x => x.serverID == res.serverID);
         if (ses == null) {
             return "none"
         }
