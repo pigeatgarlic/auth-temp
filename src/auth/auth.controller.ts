@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Req } from '@nestjs/common';
 import { Gameserver } from 'src/gameserver/gameserver.service';
-import { AuthService } from './auth.service';
+import { AuthService, Session } from './auth.service';
 
 
 export class TokenValidationResult{
@@ -36,6 +36,12 @@ export class AuthController {
     }
     return await this.appService.RemoveGameSession(Number.parseInt(id));
   }
+  @Get("all")
+  async allSession(): Promise<Array<Session>> {
+    return await this.appService.allSession();
+  }
+  
+
 
   @Get("allServer")
   async getAllServer(): Promise<Array<Gameserver>> {

@@ -8,7 +8,7 @@ import { Gameserver, GameserverService } from 'src/gameserver/gameserver.service
 import { UserService } from 'src/user/user.service';
 import { TokenValidationResult} from './auth.controller';
 
-class Session {
+export class Session {
     constructor(clientID : number, serverID: number) {
         this.clientID = clientID;
         this.serverID = serverID;
@@ -42,6 +42,10 @@ export class AuthService {
         if (res == null) {
             return "none"
         }
+        var exist = this.sessions.find(x => x.serverID == res.serverID)
+        if (exist != null) {
+            return "none"
+        }
 
         var usr = await this.userService.findOne(username)
         if (usr == null) {
@@ -65,6 +69,10 @@ export class AuthService {
         }
         this.sessions = this.sessions.filter(x => x.clientID != clientID);
         return true;
+    }
+
+    async allSession() : Promise<Array<Session>>{
+        return this.sessions;
     }
 
 
