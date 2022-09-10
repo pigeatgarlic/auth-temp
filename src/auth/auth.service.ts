@@ -42,10 +42,6 @@ export class AuthService {
         if (res == null) {
             return "none"
         }
-        var exist = this.sessions.find(x => x.serverID == res.serverID)
-        if (exist != null) {
-            return "none"
-        }
 
         var usr = await this.userService.findOne(username)
         if (usr == null) {
@@ -53,9 +49,16 @@ export class AuthService {
             usr = await this.userService.findOne(username)
         }
 
-        var result = this.sessions.find(x => x.clientID == usr.UserID)
-        if (result == null) { this.sessions.push(new Session(usr.UserID,res.serverID)); }
-        result = this.sessions.find(x => x.clientID == usr.UserID)
+        var exist = this.sessions.find(x => x.serverID == res.serverID && x.clientID != usr.UserID)
+        if (exist != null) {
+            return "none"
+        }
+
+        var result = this.sessions.find(x => x.clientID == usr.UserID && x.serverID == res.serverID)
+        if (result == null) { 
+            this.sessions.push(new Session(usr.UserID,res.serverID)); 
+            result = this.sessions.find(x => x.clientID == usr.UserID && x.serverID == res.serverID)
+        }
 
         var payload = { clientID: result.clientID, };
         var str = await this.jwtToken.signAsync(payload);
