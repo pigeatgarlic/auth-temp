@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Param, Req } from '@nestjs/common';
 import { Gameserver } from 'src/gameserver/gameserver.service';
+import { User } from 'src/user/user.service';
 import { AuthService, Session } from './auth.service';
 
 
@@ -42,8 +43,8 @@ export class AuthController {
     return await this.appService.GetAllServer();
   }
   @Get("allUser")
-  async getAllUser(): Promise<Array<Gameserver>> {
-    return await this.appService.GetAllServer();
+  async getAllUser(): Promise<Array<User>> {
+    return await this.appService.GetAllUser();
   }
 
   @Get("server/:id")
