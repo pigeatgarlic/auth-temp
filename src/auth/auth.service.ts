@@ -5,14 +5,14 @@ import { log, time } from 'console';
 import { pseudoRandomBytes, randomInt } from 'crypto';
 import { Strategy } from 'passport-jwt';
 import { Gameserver, GameserverService } from 'src/gameserver/gameserver.service';
-import { UserService } from 'src/user/user.service';
+import { User, UserService } from 'src/user/user.service';
 import { TokenValidationResult} from './auth.controller';
 
 export class Session {
     constructor(clientID : number, serverID: number) {
         this.clientID = clientID;
         this.serverID = serverID;
-        this.ID = randomInt(10000)
+        this.ID = Date.now()
     }
 
     ID: number;
@@ -33,6 +33,9 @@ export class AuthService {
 
     async GetAllServer() : Promise<Array<Gameserver>> {
         return this.gameserverService.All();
+    }
+    async GetAllUser() : Promise<Array<User>> {
+        return this.userService.All();
     }
 
 

@@ -20,9 +20,13 @@ export class GameserverService {
         return this.servers.find(server => server.name === name)
     }
     async addOne(name: string): Promise<void> {
-        this.servers.push({
-            serverID: Date.now(),
-            name: name
-        })
+        var exist = this.servers.find(server => server.name === name)
+        if (exist == null) {
+            this.servers.push({
+                serverID: Date.now(),
+                name: name
+            })
+        }
+
     }
 }

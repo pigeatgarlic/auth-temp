@@ -20,10 +20,7 @@ export class AuthController {
 
   @Get("client/:user/:server/:secret")
   async getGameSession(@Param('secret') secret: string, @Param('user') user: string, @Param('server') name: string): Promise<string> {
-    if (user == null) {
-        return "none"
-    }
-    if (secret != "oneplay") {
+    if (user == null || name == null || secret != "oneplay") {
         return "none"
     }
     return await this.appService.RequestGameSession(user, name);
@@ -36,15 +33,16 @@ export class AuthController {
     }
     return await this.appService.RemoveGameSession(Number.parseInt(id));
   }
-  @Get("all")
+  @Get("allSession")
   async allSession(): Promise<Array<Session>> {
     return await this.appService.allSession();
   }
-  
-
-
   @Get("allServer")
   async getAllServer(): Promise<Array<Gameserver>> {
+    return await this.appService.GetAllServer();
+  }
+  @Get("allUser")
+  async getAllUser(): Promise<Array<Gameserver>> {
     return await this.appService.GetAllServer();
   }
 
